@@ -1,0 +1,64 @@
+name: tomcat
+type: java:8
+disk: 4048
+mounts:
+
+    '/webapps':
+        source: local
+        source_path: application
+    '/workdir':
+        source: local
+        source_path: workdir_manager
+    '/.workdir':
+        source: local
+        source_path: workdir
+    '/conf/Catalina/localhost':
+        source: local
+        source_path: catalina
+    '/logs':
+        source: local
+        source_path: logs
+web:
+  commands:
+    start: ./bin/catalina.sh run
+
+hooks:
+  build: |
+    set -e
+
+    # Download tomcat
+    TOMCAT_VERSION=8.5.47
+    if [ ! -d "$PLATFORM_CACHE_DIR"/apache-tomcat-"$TOMCAT_VERSION" ]; then
+      echo "Downloading Apache Tomcat ${TOMCAT_VERSION}..."
+      (
+        cd "$PLATFORM_CACHE_DIR"
+        curl -O https://www-eu.apache.org/dist/tomcat/tomcat-8/v${TOMCAT_VERSION}/bin/apache-tomcat-${TOMCAT_VERSION}.tar.gz
+        tar xf apache-tomcat-"$TOMCAT_VERSION".tar.gz
+        rm -f apache-tomcat-"$TOMCAT_VERSION".tar.gz
+      )
+    else
+      echo "Using cached archive of Apache Tomcat ${TOMCAT_VERSION}..."
+    fi
+
+    # "Install" it
+    echo "Installing archive of Apache Tomcat ${TOMCAT_VERSION}..."
+    cp -R "$PLATFORM_CACHE_DIR"/apache-tomcat-"$TOMCAT_VERSION"/* .
+
+    echo "Applying Platform.sh configuration..."
+
+    # Use our custom configuration
+    # This defines the custom HTTP port and workdir.
+    cp server.xml conf/
+    # This defines the admin user used by the webapp's deploy hook to
+    # deploy itself in tomcat.
+    cp tomcat-users.xml conf/
+    cp setenv.sh bin/
+
+    # Define the password that the application will use to deploy
+    sed -i "s/PLATFORM_PROJECT_ENTROPY/$PLATFORM_PROJECT_ENTROPY/" conf/tomcat-users.xml
+    # The webapps/ folder will be a read-write mount, but we need the
+    # default webapps like manager, so copy them out and the deploy 
+    # hook will put them back in the mount.
+    mv webapps webapps.init
+  deploy: |
+    cp -R webapps.init/* webapps/
