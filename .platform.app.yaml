@@ -27,7 +27,7 @@ hooks:
     set -e
 
     # Download tomcat
-    TOMCAT_VERSION=8.5.47
+    TOMCAT_VERSION=8.5.49
     if [ ! -d "$PLATFORM_CACHE_DIR"/apache-tomcat-"$TOMCAT_VERSION" ]; then
       echo "Downloading Apache Tomcat ${TOMCAT_VERSION}..."
       (
