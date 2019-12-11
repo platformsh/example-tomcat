@@ -33,9 +33,8 @@ hooks:
       (
         cd "$PLATFORM_CACHE_DIR"
         curl -O http://repo2.maven.org/maven2/org/apache/tomcat/tomcat/${TOMCAT_VERSION}/tomcat-${TOMCAT_VERSION}.tar.gz
-        echo `ls`
-        tar xf apache-tomcat-$TOMCAT_VERSION.tar.gz
-        rm -f apache-tomcat-$TOMCAT_VERSION.tar.gz
+        tar xf tomcat-$TOMCAT_VERSION.tar.gz
+        rm -f tomcat-$TOMCAT_VERSION.tar.gz
       )
     else
       echo "Using cached archive of Apache Tomcat ${TOMCAT_VERSION}..."
