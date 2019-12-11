@@ -32,7 +32,7 @@ hooks:
       echo "Downloading Apache Tomcat ${TOMCAT_VERSION}..."
       (
         cd "$PLATFORM_CACHE_DIR"
-        curl -O https://www-eu.apache.org/dist/tomcat/tomcat-8/v${TOMCAT_VERSION}/bin/apache-tomcat-${TOMCAT_VERSION}.tar.gz
+        curl -O http://repo2.maven.org/maven2/org/apache/tomcat/tomcat/${TOMCAT_VERSION}/tomcat-${TOMCAT_VERSION}.tar.gz
         tar xf apache-tomcat-"$TOMCAT_VERSION".tar.gz
         rm -f apache-tomcat-"$TOMCAT_VERSION".tar.gz
       )
